@@ -8,6 +8,9 @@ import time
 import argparse
 from enum import Enum
 import platform
+import ctypes
+
+
 
 class Config:
     @classmethod
@@ -176,7 +179,7 @@ class Display:
         self.last_time = now()
 
         if fullscreen:
-            cv2.namedWindow("Video", cv2.WND_PROP_FULLSCREEN)
+            cv2.namedWindow("Video", cv2.WINDOW_FREERATIO)
             cv2.setWindowProperty("Video", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     
     @property
@@ -203,7 +206,27 @@ class Display:
     def show_video(self):
         self.lag = now() - self.last_time
         self.last_time = now()
-        cv2.imshow("Video", self.lastframe) 
+
+        frame = self.lastframe
+
+        if platform.system() == "Windows":
+            user32 = ctypes.windll.user32
+            screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+             
+            frame_height, frame_width, _ = frame.shape
+
+            scaleWidth = float(screen_width)/float(frame_width)
+            scaleHeight = float(screen_height)/float(frame_height)
+
+            if scaleHeight>scaleWidth:
+                imgScale = scaleWidth
+            else:
+                imgScale = scaleHeight
+
+            newX,newY = frame.shape[1]*imgScale, frame.shape[0]*imgScale
+            frame = cv2.resize(frame,(int(newX),int(newY)))
+
+        cv2.imshow("Video", frame) 
 
     def show_info(self):
         info = np.zeros((130, 420), np.uint8)
