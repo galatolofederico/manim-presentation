@@ -1,6 +1,8 @@
+# For an actively developed fork please check out [manim-slides](https://github.com/jeertmans/manim-slides)!
+
 # manim-presentation
 
-Tool for live presentations using [manim](https://www.manim.community/)
+Tool for live presentations using [manim](https://www.manim.community/).
 
 ## Install
 
